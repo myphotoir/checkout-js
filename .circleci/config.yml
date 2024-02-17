@@ -111,8 +111,8 @@ jobs:
       - run:
           name: "Configure Git user"
           command: |
-            git config user.email $GIT_USER_EMAIL
-            git config user.name $GIT_USER_NAME
+            git config user.email seth@myphoto.com
+            git config user.name myphotoir
       - run:
           name: "Remove old release files"
           command: rm -rf dist
