@@ -134,28 +134,6 @@ jobs:
           root: /tmp
           paths:
             - release_version.txt
-
-  upload_to_sentry:
-    <<: *node_executor
-    steps:
-      - ci/pre-setup
-      - run:
-          name: "Install Sentry cli"
-          command: curl -sL https://sentry.io/get-cli/ | bash
-      - attach_workspace:
-          at: /tmp
-      - run:
-          name: "Upload source maps to Sentry"
-          command: |
-            source /tmp/release_version.txt
-            git checkout $RELEASE_VERSION
-            SENTRY_RELEASE=$SENTRY_PROJECT@${RELEASE_VERSION#v}
-            SENTRY_COMMIT=$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME@$RELEASE_REVISION
-            sentry-cli releases --project $SENTRY_PROJECT --org $SENTRY_ORG new $SENTRY_RELEASE
-            sentry-cli releases --project $SENTRY_PROJECT --org $SENTRY_ORG set-commits $SENTRY_RELEASE --commit $SENTRY_COMMIT
-            sentry-cli releases --project $SENTRY_PROJECT --org $SENTRY_ORG files $SENTRY_RELEASE upload-sourcemaps dist
-            sentry-cli releases --project $SENTRY_PROJECT --org $SENTRY_ORG finalize $SENTRY_RELEASE
-
 workflows:
   version: 2
 
@@ -215,9 +193,4 @@ workflows:
             <<: *release_filter
           requires:
             - approve
-      - upload_to_sentry:
-          filters:
-            <<: *release_filter
-          requires:
-            - approve
-            - release
+   
